@@ -50,6 +50,14 @@ class AdminPanelProvider extends PanelProvider
 </script>
 BLADE),
             )
+            ->renderHook(
+                PanelsRenderHook::FOOTER,
+                fn (): string => Blade::render(<<<'BLADE'
+<div class="mx-auto w-full px-4 py-3 text-center text-xs text-gray-500 dark:text-gray-400 sm:px-6 lg:px-8">
+    v{{ config('app.version') }} &mdash; (c) 2026 Torras AI Solutions LLC
+</div>
+BLADE),
+            )
             ->colors([
                 'primary' => Color::Blue,
             ])

@@ -97,6 +97,8 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
+    'version' => env('APP_VERSION', 'dev'),
+
     'key' => env('APP_KEY'),
 
     'previous_keys' => [
