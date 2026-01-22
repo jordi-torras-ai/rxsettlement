@@ -20,6 +20,8 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'employer_id',
+        'user_type',
         'password',
     ];
 
@@ -44,5 +46,30 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function employer()
+    {
+        return $this->belongsTo(Employer::class);
+    }
+
+    public function intakes()
+    {
+        return $this->hasMany(Intake::class);
+    }
+
+    public function vendorCoverages()
+    {
+        return $this->hasMany(VendorCoverage::class);
+    }
+
+    public function planDesignYears()
+    {
+        return $this->hasMany(PlanDesignYear::class);
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->user_type === 'admin';
     }
 }
