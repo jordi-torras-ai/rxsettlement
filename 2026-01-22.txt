@@ -1,13 +1,10 @@
 
 
-Employer (Plan Sponsor) 
-Employer (Plan Sponsor) Legal Name
-DBA (if applicable)
- Address Line 1
-Address Line :
-City
-State
-Zip code
+#Employer (Plan Sponsor) 
+#Employer (Plan Sponsor) Legal Name
+
+
+
 Authorized Employer Contact
      Employer Primary Contact Name
      Employer Primary Email
@@ -17,3 +14,78 @@ Billing Contact
      Employer Primary Email
      Employer Primary Phone
 Plan Information 
+
+now i need an "intakes" table
+(menu for regular users is "Intake" -no "s" for admin they see "Intakes") 
+regular users can see only see their own intakes.
+regular users (and admins) can create intakes. 
+intakes have 3 field groups:
+Primary Day-to-Day for Intake
+Contact for Escalations
+Other
+and each field group has 3 fields:
+Name
+Title
+Email
+Phone #	
+-----
+
+cool. now i need a table for Vendor Coverages.
+users see only their own vendor coverages.
+vendor coverages belongs to an intake (and hence a user, of course)
+every vendor coverage has these fields:
+- Vendor Name
+- Vendor Year
+- Vendor Contact Name
+- Vendor Contact Email
+- Fully v. Self-Insured
+- Plan Year Start Date
+- Plan Year End Date (if applicable)
+
+------
+
+OK. now something sofisticated. 
+a new table: plan design year.
+plan design is for a year (so year is a field, but it must be 1,2,3 up to 6 in a dropdown)
+	it has these fields:
+	Employer (Plan Sponsor Name)
+	Plan Effective Date (MM/DD/YYYY)
+	Current Vendor Name
+	Is this a 'new' vendor? (yes/no)
+then, under this table, there are several tables, but they will have not independent menu options, instead they need to be inserted/edited/viewed as an inline list so that needs to be sort of master-detail form.
+
+table: Budget Premium-Equivalent Funding Monthly Rates
+it has the fields:
+	plan name
+	Admin Fee Group (string)
+	Employee (dollar amount)
+	Emp/Spouse (dollar amount)
+	Emp/Child (dollar amount)
+	Emp/Children	 (dollar amount)
+	Family	Plan Term Date (date)
+
+table: Employee Monthly Contributions
+it has the fields:
+	plan name
+	Admin Fee Group (string)
+	Employee (dollar amount)
+	Emp/Spouse(dollar amount)
+	Emp/Child(dollar amount)
+	Emp/Children(dollar amount)
+	Family(dollar amount)
+
+table: PEPM Admin Fee Group
+it has the fields:
+	admin fee group (string)
+	ASO (dollar amount)
+	HSA/HRA Admin (dollar amount)
+	Disease Management (dollar amount)
+	Tele-health (dollar amount)
+	Pharmacy Rebate (Credit) (dollar amount)
+	Pharmacy Carveout - PBM Fee (dollar amount)
+	Wellness (Fee and/or Credit) (dollar amount)
+	Misc. (Broker Fees) (dollar amount)
+
+some rules: an intake cannot have a plan design with same year (so max 6 plan designs for intake)
+
+
