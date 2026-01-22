@@ -14,6 +14,26 @@ class BudgetPremiumEquivalentFundingMonthlyRatesRelationManager extends Relation
 
     protected static ?string $title = 'Budget Premium-Equivalent Funding Monthly Rates';
 
+    protected function canCreate(): bool
+    {
+        return $this->canManage();
+    }
+
+    protected function canEdit($record): bool
+    {
+        return $this->canManage();
+    }
+
+    protected function canDelete($record): bool
+    {
+        return $this->canManage();
+    }
+
+    protected function canDeleteAny(): bool
+    {
+        return $this->canManage();
+    }
+
     public function form(Form $form): Form
     {
         return $form
@@ -84,11 +104,27 @@ class BudgetPremiumEquivalentFundingMonthlyRatesRelationManager extends Relation
                     ->toggleable(),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()->iconButton(),
+                Tables\Actions\CreateAction::make()
+                    ->label('New')
+                    ->icon('heroicon-m-plus'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()->iconButton(),
                 Tables\Actions\DeleteAction::make()->iconButton(),
             ]);
+    }
+
+    private function canManage(): bool
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return false;
+        }
+
+        if ($user->isAdmin()) {
+            return true;
+        }
+
+        return (int) $this->getOwnerRecord()->user_id === (int) $user->id;
     }
 }
