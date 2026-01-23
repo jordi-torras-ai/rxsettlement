@@ -32,6 +32,9 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->darkMode(true)
             ->defaultThemeMode(ThemeMode::Dark)
+            ->homeUrl(fn (): string => auth()->user()?->isAdmin()
+                ? \App\Filament\Pages\Dashboard::getUrl()
+                : \App\Filament\Resources\EmployerResource::getUrl('index'))
             ->renderHook(
                 PanelsRenderHook::HEAD_START,
                 fn (): string => Blade::render(<<<'BLADE'
