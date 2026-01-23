@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Http\Responses\Auth\LoginResponse as AppLoginResponse;
 use App\Models\AuditLog;
+use Filament\Http\Responses\Auth\Contracts\LoginResponse as LoginResponseContract;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Database\Eloquent\Model;
@@ -17,7 +19,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(LoginResponseContract::class, AppLoginResponse::class);
     }
 
     /**
