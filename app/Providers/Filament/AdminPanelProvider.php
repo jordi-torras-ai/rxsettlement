@@ -64,7 +64,7 @@ BLADE),
             ->colors([
                 'primary' => Color::Blue,
             ])
-            ->brandName('RX Settlement')
+            ->brandName('1BeneCare')
             ->brandLogo(asset('images/1benecare_logo.png'))
             ->brandLogoHeight('2.5rem')
             ->maxContentWidth('full')
