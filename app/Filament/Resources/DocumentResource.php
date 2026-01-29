@@ -65,7 +65,12 @@ class DocumentResource extends Resource
             });
         }
 
-        return $query;
+        return $query
+            ->orderBy('intake_id')
+            ->orderBy('document_type_id')
+            ->orderBy('year')
+            ->orderBy('budget_premium_equivalent_funding_monthly_rate_id')
+            ->orderBy('id');
     }
 
     public static function form(Form $form): Form
@@ -160,24 +165,19 @@ class DocumentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('intake_id')
             ->columns([
                 Tables\Columns\TextColumn::make('intake.name')
                     ->label('Intake')
                     ->toggleable()
-                    ->searchable()
-                    ->sortable(),
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('documentType.description')
                     ->label('Document Type')
-                    ->searchable()
-                    ->sortable(),
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('year')
-                    ->label('Year')
-                    ->sortable(),
+                    ->label('Year'),
                 Tables\Columns\TextColumn::make('budgetPremiumEquivalentFundingMonthlyRate.plan_name')
                     ->label('Budget Rate Plan')
-                    ->toggleable()
-                    ->sortable(),
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('file_path')
                     ->label('Document')
                     ->formatStateUsing(fn (?string $state): ?string => $state ? basename($state) : null)
@@ -189,7 +189,6 @@ class DocumentResource extends Resource
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
-                    ->sortable()
                     ->toggleable(),
             ])
             ->filters([
