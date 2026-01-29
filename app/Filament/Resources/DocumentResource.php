@@ -152,7 +152,8 @@ class DocumentResource extends Resource
                     ->preserveFilenames()
                     ->downloadable()
                     ->openable()
-                    ->required(fn (string $operation): bool => $operation === 'create'),
+                    ->required(fn (string $operation): bool => $operation === 'create')
+                    ->dehydrated(),
             ]);
     }
 
