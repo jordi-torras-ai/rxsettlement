@@ -62,7 +62,7 @@ class GlossaryResource extends Resource
                     ->label('Type')
                     ->disabled(),
                 Forms\Components\TextInput::make('rates')
-                    ->label('Rates')
+                    ->label('Terms')
                     ->disabled(),
                 Forms\Components\Textarea::make('definition')
                     ->label('Definition')
@@ -84,7 +84,7 @@ class GlossaryResource extends Resource
                     ->label('Type')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('rates')
-                    ->label('Rates')
+                    ->label('Terms')
                     ->wrap()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('definition')
