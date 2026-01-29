@@ -1,0 +1,64 @@
+let's create a "Glossary" table.
+that is readonly for eveyone, so we will populate the data with a seeder. 
+fields:
+id (as always)
+order (integer)
+type (string)
+rates (string)
+definition (string)
+other industry terms used (string)
+the table has a filte by "type".
+the data is below: 
+```
+order	type	Rates	Definition	Other Industry Terms Used
+10	General	Fee - Administrative Services Only (ASO)	A per employee per month (PEPM) fee charged by a payor (insurer) or other third-party administrator (TPA) responsible for administering a group employee benefit plan to cover expenses related to recordkeeping and/or other administrative costs. Include PEPM charges for network access and any other additional programs related to the medical plan that are not included or illustrated below.	Administrative Services Fee, Admin Fee
+20	General	Fee - HSA/HRA Account	PEPM fee for administration of an HSA or HRA	
+30	General	Fee - Disease Management	PEPM fee for use of disease management programs	
+40	General	Fee - Tele-health	PEPM fee for use of tele-health programs	
+50	General	Fee - Wellness	PEPM fee for use of wellness programs that have an admin fee component or Wellness allowance/credit from carrier	
+60	General	Fee - Rx Rebate Credit	PEPM admin credit given for pharmacy rebates - should be a negative value	
+70	General	Fee - Pharmacy Carveout - (PBM, PBA, GPO)	PEPM fee for pharmacy administration that is carved out or with Prescription Benefit Manager (PBM), Prescription Benefit Administrator (PBA), Group Purchasing Organization (GPO)	
+80		Reinsurance or Stop-loss (if applicable)		
+90	Reinsurance	Fee - Spec Stop Loss	PEPM fee for specific stop loss coverage, may be broken out by coverage tier or composite, but cannot be accepted broken out by enrollment option (base vs high plan, etc.)	
+100	Reinsurance	Fee - Stop Loss Agg	PEPM fee for aggregate stop loss coverage, may be broken out by coverage tier or composite, but cannot be accepted broken out by enrollment option (base vs high plan, etc.)	
+110	Reinsurance	Contract Basis	The effective policy period for a Stop Loss contract. Typically structured as Incurred/Paid. Examples: PAID, 36/12, 24/12, 12/18, 12/15, 12/12	May also list out the actual incurred date range and paid date range
+120	General	Budget Premium-Equivalent Funding Monthly Rates*	Total monthly rates for each plan by coverage tier, including employer and employee contributions	Budget rates, Premium equivalent rates, COBRA equivalent rates (excluding 2% admin)
+130	General	Admin Fee Group	This is a key to identify the admin fees that go with each plan, if separate admin fees apply	
+140	General	Employee Monthly Contributions*	Monthly employee contribution for each plan by coverage tier	Employee premiums; monthly paycheck deductions
+150	General	Fee - Misc	PEPM Broker or Consultant Compensation ($ Amount or % Amount) of payment, whether commission or fee based which are included in the Premium Equivalents/Funding rates only. (Commission and/or consulting fees billed separately to the client is not included here)	
+160	General	Per Subscriber (per employee)	A Stop Loss Policy that covers only the subscribing members under the subscriber of the employer's healthcare plan. Most stop loss policies do not use this option. 	Per Contract, Per Family Unit
+170	General	Per Member	A Stop Loss Policy that covers all members insured under the employer's healthcare plan. Most stop loss policies use this option. 	Per Covered Individual
+180	General	Aggregating Specific Deductible	Reimbursement point at which the Stop Loss Policy will cover all claims for an employer. (Group Level)	Individual Aggregating Deductible (IAD)
+190	General	Specific Deductible	Reimbursement point at which the Stop Loss Policy will cover claims for any member exceeding this total. (Patient Level)	ISL
+200	General	Aggregating Factors	The amount, expressed in dollars per employee and/or dependents per month used to define the claim liability for each month	ASL
+210	General	Aggregating Factors - Composite	When Aggregate Factors are broken out for different plans in the Stop Loss Contract, a composite must be provided to input totals in Innovu Lens	
+220	General	Corridor	Risk level above expected claims. Typically ranges from 110 to 175%	
+```
+do your magic!
+
+
+===============
+
+ok now i need a table "document_types" only visible for admins (so in Admin menu) the table as id and description only.
+admins can crud the table. 
+below the document types that need to be populated:
+```
+CENSUS
+Summary Benefit Coverage (SBC)
+Master Plan Document (MPD) - unless Summary Plan Description (SPD) is used as Master Document
+Summary Plan Description (SPD)
+Medical/Rx Bundled
+Medical (separate admin for Rx)
+RX(separate admin for Medical)
+```
+
+-------------
+
+for next thing we will use Cloudfare R2. I have a bucket, tell me what you need me to put in .env so you can use it
+
+-----------
+
+cool. now i need a "documents" table. 
+it has id, a document type (that links to the documen types we created before), year (int), an intake id, and an id that points to Budget Premium-Equivalent Funding Monthly Rates.
+and then a place to drop a document (that goes to r2)
+

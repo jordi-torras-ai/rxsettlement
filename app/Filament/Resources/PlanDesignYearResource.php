@@ -9,6 +9,7 @@ use App\Filament\Resources\PlanDesignYearResource\RelationManagers\PepmAdminFeeG
 use App\Models\Employer;
 use App\Models\Intake;
 use App\Models\PlanDesignYear;
+use App\Models\VendorCoverage;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -58,7 +59,12 @@ class PlanDesignYearResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        $query = parent::getEloquentQuery();
+        $query = parent::getEloquentQuery()
+            ->withCount([
+                'budgetPremiumEquivalentFundingMonthlyRates',
+                'employeeMonthlyContributions',
+                'pepmAdminFeeGroups',
+            ]);
         $user = auth()->user();
 
         if (!$user?->isAdmin()) {
@@ -101,6 +107,7 @@ class PlanDesignYearResource extends Resource
 
                         return count($ids) === 1 ? (int) $ids[0] : null;
                     })
+                    ->live()
                     ->searchable()
                     ->required(),
                 Forms\Components\Select::make('year')
@@ -120,15 +127,37 @@ class PlanDesignYearResource extends Resource
                         },
                         ignoreRecord: true
                     ),
-                Forms\Components\TextInput::make('employer_plan_sponsor_name')
+                Forms\Components\Select::make('employer_plan_sponsor_name')
                     ->label('Employer (Plan Sponsor Name)')
-                    ->required()
-                    ->maxLength(255),
+                    ->options(fn (): array => Employer::query()
+                        ->orderBy('legal_name')
+                        ->pluck('legal_name', 'legal_name')
+                        ->all())
+                    ->default(function () use ($user): ?string {
+                        return $user?->employer?->legal_name;
+                    })
+                    ->disabled(fn (): bool => !($user?->isAdmin() ?? false))
+                    ->dehydrated()
+                    ->searchable()
+                    ->required(),
                 Forms\Components\DatePicker::make('plan_effective_date')
                     ->label('Plan Effective Date'),
-                Forms\Components\TextInput::make('current_vendor_name')
+                Forms\Components\Select::make('current_vendor_name')
                     ->label('Current Vendor Name')
-                    ->maxLength(255),
+                    ->options(function (Forms\Get $get): array {
+                        $intakeId = $get('intake_id');
+                        if (blank($intakeId)) {
+                            return [];
+                        }
+
+                        return VendorCoverage::query()
+                            ->where('intake_id', $intakeId)
+                            ->orderBy('vendor_name')
+                            ->pluck('vendor_name', 'vendor_name')
+                            ->all();
+                    })
+                    ->disabled(fn (Forms\Get $get): bool => blank($get('intake_id')))
+                    ->searchable(),
                 Forms\Components\Toggle::make('is_new_vendor')
                     ->label("Is this a 'new' vendor?")
                     ->inline(false),
@@ -145,6 +174,15 @@ class PlanDesignYearResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('year')
                     ->label('Year')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('budget_premium_equivalent_funding_monthly_rates_count')
+                    ->label('Plans')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('employee_monthly_contributions_count')
+                    ->label('Contributions')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('pepm_admin_fee_groups_count')
+                    ->label('Groups')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('employer_plan_sponsor_name')
                     ->label('Employer')

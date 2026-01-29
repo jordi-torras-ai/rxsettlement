@@ -1,0 +1,4 @@
+cool. now, close the button "new document" i need another button "Required Documents"
+- That opens a modal, to select an Intake (if there is only, that intake would be prepopulated)
+- then, it creates documents as cartesian product:
+- for every type of document (in documet types), for every year in plan design year, for every Budget Premium-Equivalent Funding Monthly Rates in plan design year, it creates a document (empty attachement) 

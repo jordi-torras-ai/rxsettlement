@@ -50,4 +50,9 @@ class Intake extends Model
     {
         return $this->hasMany(PlanDesignYear::class);
     }
+
+    public function documents()
+    {
+        return $this->hasMany(Document::class);
+    }
 }
