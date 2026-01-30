@@ -8,6 +8,7 @@ class DocumentType extends Model
 {
     protected $fillable = [
         'description',
+        'example_file',
     ];
 
     public function documents()

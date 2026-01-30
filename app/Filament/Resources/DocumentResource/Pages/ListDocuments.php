@@ -8,6 +8,7 @@ use App\Models\DocumentType;
 use App\Models\Intake;
 use App\Models\PlanDesignYear;
 use Filament\Actions;
+use Filament\Notifications\Notification;
 use Filament\Forms\Components\Select;
 use Filament\Resources\Pages\ListRecords;
 
@@ -20,7 +21,7 @@ class ListDocuments extends ListRecords
         return [
             Actions\CreateAction::make(),
             Actions\Action::make('requiredDocuments')
-                ->label('Required Documents')
+                ->label('Generate Documents')
                 ->modalHeading('Create Required Documents')
                 ->modalSubmitActionLabel('Create')
                 ->form([
@@ -63,18 +64,37 @@ class ListDocuments extends ListRecords
                         ->with('budgetPremiumEquivalentFundingMonthlyRates')
                         ->get();
 
+                    $createdCount = 0;
                     foreach ($documentTypes as $documentType) {
                         foreach ($planDesignYears as $planDesignYear) {
                             foreach ($planDesignYear->budgetPremiumEquivalentFundingMonthlyRates as $rate) {
-                                Document::query()->firstOrCreate([
+                                $document = Document::query()->firstOrCreate([
                                     'document_type_id' => $documentType->id,
                                     'year' => $planDesignYear->year,
                                     'intake_id' => $intake->id,
                                     'budget_premium_equivalent_funding_monthly_rate_id' => $rate->id,
                                 ]);
+
+                                if ($document->wasRecentlyCreated) {
+                                    $createdCount++;
+                                }
                             }
                         }
                     }
+
+                    if ($createdCount === 0) {
+                        Notification::make()
+                            ->title('No new documents created')
+                            ->warning()
+                            ->send();
+
+                        return;
+                    }
+
+                    Notification::make()
+                        ->title('Created ' . $createdCount . ' documents')
+                        ->success()
+                        ->send();
                 }),
         ];
     }

@@ -10,6 +10,8 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\HtmlString;
 
 class DocumentTypeResource extends Resource
 {
@@ -17,13 +19,13 @@ class DocumentTypeResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
-    protected static ?string $navigationGroup = 'Admin';
+    protected static ?string $navigationGroup = null;
 
-    protected static ?int $navigationSort = 10;
+    protected static ?int $navigationSort = 60;
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->isAdmin() ?? false;
+        return auth()->check();
     }
 
     public static function canCreate(): bool
@@ -33,7 +35,7 @@ class DocumentTypeResource extends Resource
 
     public static function canView(Model $record): bool
     {
-        return auth()->user()?->isAdmin() ?? false;
+        return auth()->check();
     }
 
     public static function canEdit(Model $record): bool
@@ -53,12 +55,40 @@ class DocumentTypeResource extends Resource
 
     public static function form(Form $form): Form
     {
+        $user = auth()->user();
+
         return $form
             ->schema([
                 Forms\Components\TextInput::make('description')
                     ->label('Description')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\FileUpload::make('example_file')
+                    ->label('Example File')
+                    ->disk('r2')
+                    ->directory('document-types')
+                    ->preserveFilenames()
+                    ->downloadable()
+                    ->openable()
+                    ->nullable()
+                    ->visible(fn (): bool => $user?->isAdmin() ?? false),
+                Forms\Components\Placeholder::make('example_file_download')
+                    ->label('Example File')
+                    ->content(function (?Model $record): HtmlString {
+                        if (!$record || blank($record->example_file)) {
+                            return new HtmlString('&mdash;');
+                        }
+
+                        $url = static::fileUrl($record->example_file);
+                        $label = e(basename($record->example_file));
+
+                        return new HtmlString(
+                            $url
+                                ? '<a class="text-primary-600 hover:underline" href="' . e($url) . '" target="_blank" rel="noopener noreferrer">Download ' . $label . '</a>'
+                                : $label
+                        );
+                    })
+                    ->visible(fn (): bool => !($user?->isAdmin() ?? false)),
             ]);
     }
 
@@ -70,14 +100,26 @@ class DocumentTypeResource extends Resource
                     ->label('Description')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('example_file')
+                    ->label('Example File')
+                    ->formatStateUsing(fn (?string $state): ?string => $state ? basename($state) : null)
+                    ->url(fn (DocumentType $record): ?string => static::fileUrl($record->example_file))
+                    ->color('primary')
+                    ->openUrlInNewTab(),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()->iconButton(),
-                Tables\Actions\EditAction::make()->iconButton(),
-                Tables\Actions\DeleteAction::make()->iconButton(),
+                Tables\Actions\EditAction::make()
+                    ->iconButton()
+                    ->visible(fn (): bool => auth()->user()?->isAdmin() ?? false),
+                Tables\Actions\DeleteAction::make()
+                    ->iconButton()
+                    ->visible(fn (): bool => auth()->user()?->isAdmin() ?? false),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make()->iconButton(),
+                Tables\Actions\DeleteBulkAction::make()
+                    ->iconButton()
+                    ->visible(fn (): bool => auth()->user()?->isAdmin() ?? false),
             ]);
     }
 
@@ -89,5 +131,21 @@ class DocumentTypeResource extends Resource
             'view' => Pages\ViewDocumentType::route('/{record}'),
             'edit' => Pages\EditDocumentType::route('/{record}/edit'),
         ];
+    }
+
+    private static function fileUrl(?string $path): ?string
+    {
+        if (blank($path)) {
+            return null;
+        }
+
+        $disk = Storage::disk('r2');
+        $publicUrl = config('filesystems.disks.r2.url');
+
+        if (filled($publicUrl)) {
+            return $disk->url($path);
+        }
+
+        return $disk->temporaryUrl($path, now()->addMinutes(10));
     }
 }
