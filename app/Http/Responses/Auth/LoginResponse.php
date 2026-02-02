@@ -2,7 +2,7 @@
 
 namespace App\Http\Responses\Auth;
 
-use App\Filament\Resources\EmployerResource;
+use App\Filament\Pages\Welcome;
 use Filament\Facades\Filament;
 use Filament\Http\Responses\Auth\Contracts\LoginResponse as Responsable;
 use Illuminate\Http\RedirectResponse;
@@ -15,7 +15,7 @@ class LoginResponse implements Responsable
         $user = Filament::auth()->user();
 
         if ($user && ! $user->isAdmin()) {
-            return redirect()->to(EmployerResource::getUrl('index'));
+            return redirect()->to(Welcome::getUrl());
         }
 
         return redirect()->intended(Filament::getHomeUrl());
