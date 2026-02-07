@@ -1,0 +1,2 @@
+question: (don't code). for the left navigation bar, i will need some option that open an html, not actual table.
+where would you like me to leave the html, and the corresponding images? the htm should be shown inside the main screen, perfectly integrated with the application, and not be visible unless there is a valid login

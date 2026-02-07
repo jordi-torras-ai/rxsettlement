@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\IntakeResource\Pages;
 
+use App\Filament\Pages\Concerns\HasInstructions;
 use App\Filament\Pages\Concerns\RedirectToIndex;
 use App\Filament\Resources\IntakeResource;
 use Filament\Resources\Pages\CreateRecord;
@@ -11,6 +12,15 @@ class CreateIntake extends CreateRecord
     protected static string $resource = IntakeResource::class;
 
     use RedirectToIndex;
+    use HasInstructions;
+
+    protected function getHeaderActions(): array
+    {
+        return array_merge(
+            [$this->getInstructionsAction('intake')],
+            parent::getHeaderActions(),
+        );
+    }
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {

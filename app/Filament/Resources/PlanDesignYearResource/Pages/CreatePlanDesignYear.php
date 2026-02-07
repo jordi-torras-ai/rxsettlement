@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PlanDesignYearResource\Pages;
 
+use App\Filament\Pages\Concerns\HasInstructions;
 use App\Filament\Pages\Concerns\RedirectToIndex;
 use App\Filament\Resources\PlanDesignYearResource;
 use App\Models\Intake;
@@ -14,6 +15,15 @@ class CreatePlanDesignYear extends CreateRecord
     protected static string $resource = PlanDesignYearResource::class;
 
     use RedirectToIndex;
+    use HasInstructions;
+
+    protected function getHeaderActions(): array
+    {
+        return array_merge(
+            [$this->getInstructionsAction('plan-design-year')],
+            parent::getHeaderActions(),
+        );
+    }
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
